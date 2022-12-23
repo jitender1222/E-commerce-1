@@ -4,6 +4,7 @@ import authRoles from "../utils/authRoles";
 import bcrypt from "bcryptjs"
 import JWT from "jsonwebtoken"
 import crypto from "crypto"
+import config from "../config/index";
 
 const userschema=mongoose.Schema(
     {
@@ -47,10 +48,38 @@ const userschema=mongoose.Schema(
     userschema.pre('save',async function(next){
 
         if(!this.modified("password")) return next();
-
+        
             this.password=await bcrypt.hash(this.password,10);
-            
+
             next();
     })
+
+    // adding more features to our schema
+
+    userschema.method={
+
+        // compare Password
+
+        comparePassword: async function(enteredPassword){
+
+            return await bcrypt.compare(enteredPassword,this.password)
+        },
+
+        // generate jwt token
+
+        getjwtToken:function(){
+
+            return JWT.sign(
+                {
+                    _id:this._id,
+                    role:this.role
+                },
+                config.JWT_SECRET,
+                {
+                    expiresIn: config.JWT_EXPIRY,
+                }
+            )
+        }
+    }
 
     export default mongoose.model=('User',userschema);
