@@ -1,6 +1,9 @@
 
 import mongoose from "mongoose";
 import authRoles from "../utils/authRoles";
+import bcrypt from "bcryptjs"
+import JWT from "jsonwebtoken"
+import crypto from "crypto"
 
 const userschema=mongoose.Schema(
     {
@@ -34,10 +37,20 @@ const userschema=mongoose.Schema(
         forgotPasswordToken:String,
         forgotPasswordExpiry:String
     },
-
     {
         timestamps:true
     }
     );
+
+    // encrypt password
+
+    userschema.pre('save',async function(next){
+
+        if(!this.modified("password")) return next();
+
+            this.password=await bcrypt.hash(this.password,10);
+            
+            next();
+    })
 
     export default mongoose.model=('User',userschema);
