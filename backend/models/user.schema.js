@@ -79,6 +79,23 @@ const userschema=mongoose.Schema(
                     expiresIn: config.JWT_EXPIRY,
                 }
             )
+        },
+
+        generateForgotPasswordToken: function(){
+
+            const forgotToken= crypto.randomBytes(20).toString('hex');
+
+            // step-1 -> save to db
+
+            this.forgotPasswordToken= crypto.createHash("sha256")
+            .update(forgotToken)
+            .digest('hex')
+
+            this.forgotPasswordExpiry=Date.now() + 20 + 60 * 1000;
+
+            // return the value to user
+
+            return forgotToken;
         }
     }
 
