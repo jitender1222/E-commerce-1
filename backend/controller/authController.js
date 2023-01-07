@@ -121,7 +121,7 @@ export const login=asyncHandler(async(req,res) =>{
 
 *********************************************************/
 
-export const logout=asyncHandler(async(req,res)=>{
+export const logout=asyncHandler(async(_req,res)=>{
 
     // we can also use cookie.clear
 
